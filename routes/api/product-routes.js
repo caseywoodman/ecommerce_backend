@@ -16,9 +16,16 @@ router.get("/", async (req, res) => {
 });
 
 // get one product
-router.get("/:id", (req, res) => {
-  // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
+router.get("/:id", async (req, res) => {
+  const data = await Product.findOne({
+    // find a single product by its `id`
+    where: {
+      id: req.params.id,
+    },
+    // be sure to include its associated Category and Tag data
+    include: [Category, { model: Tag, through: ProductTag }],
+  });
+  return res.json(data);
 });
 
 // create new product
@@ -85,7 +92,6 @@ router.put("/:id", (req, res) => {
     })
     .then((updatedProductTags) => res.json(updatedProductTags))
     .catch((err) => {
-      // console.log(err);
       res.status(400).json(err);
     });
 });

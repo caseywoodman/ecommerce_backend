@@ -14,17 +14,34 @@ router.get("/", async (req, res) => {
   return res.json(data);
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   // find a single tag by its `id`
-  // be sure to include its associated Product data
+  const data = await Tag.findOne({
+    where: {
+      id: req.params.id,
+    },
+    // be sure to include its associated Product data
+    include: [{ model: Product, through: ProductTag }],
+  });
+  return res.json(data);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   // create a new tag
+  try {
+    const data = await Tag.create(req.body);
+    return res.status(200).json(data);
+  } catch (err) {
+    return res.json(err);
+  }
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   // update a tag's name by its `id` value
+  const data = await Tag.update(req.body, {
+    where: { id: req.params.id },
+  });
+  return res.status(200).json(data);
 });
 
 router.delete("/:id", async (req, res) => {
